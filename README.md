@@ -50,9 +50,32 @@ scripts/            # 图标生成脚本
 - 存储：`data/signups.json`（运行时自动创建，已加入 .gitignore）
 - **上云提醒**：部署到 Serverless（Vercel）时文件系统只读，需把 `src/lib/store.ts` 里的读写换成 Vercel KV / Supabase 等，接口不用动
 
+## 部署（Deploy）
+
+### 方式一：Vercel 一键导入（推荐）
+
+1. 把代码推到 GitHub（仓库 `Feb19S/mtjm`）
+2. 打开 https://vercel.com/new → 选中该仓库 → Import
+3. Framework 会自动识别为 Next.js → 直接点 **Deploy**
+4. 完成后得到 `https://mtjm-xxx.vercel.app`，可在 Settings 里绑定自定义域名
+
+### 方式二：本地 CLI 部署
+
+```bash
+npx vercel login      # 首次需登录
+npm run build         # 本地构建验证
+npm run deploy        # 等价于 npx vercel --prod，直接上线
+```
+
+### ⚠️ 报名存储上云必读
+
+当前报名名单写在 `data/signups.json`（服务端文件）。**Vercel 等 Serverless 平台文件系统只读**，部署后报名会写不进去。
+上线报名功能前，把 `src/lib/store.ts` 的读写换成 Vercel KV / Supabase / Redis 等托管存储（接口 `/api/signups` 与前端组件**无需改动**）。
+
+> 纯展示页面（首页 / 成员 / 招募）不依赖文件存储，可直接部署，不受影响。
+
 ## 待办
 
 - [ ] 对接真实数据（成员、活动、公告）
 - [ ] 部署时把报名存储换成云端 KV / 数据库
 - [ ] 招募表单单据 / 群二维码
-- [ ] 部署（Vercel / 静态托管）
