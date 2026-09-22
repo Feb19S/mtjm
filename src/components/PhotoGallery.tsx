@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// 相册：图片网格 + 点开全屏灯箱（支持左右切换、键盘、移动端滑动）。
-// 无图时渲染占位网格 + 上传引导，提示真实图该放哪。
+// 相册：图片网格 + 全屏灯箱（方向感知滑切 + 淡入淡出 + Ken Burns 缓推 + 开场弹入）。
+// 无图时渲染占位网格 + 上传引导。
 export default function PhotoGallery({
   images,
   nickname,
@@ -14,22 +14,54 @@ export default function PhotoGallery({
   emptyHint?: string;
 }) {
   const [active, setActive] = useState<number | null>(null);
+  const [leaving, setLeaving] = useState<number | null>(null);
+  const [dir, setDir] = useState<1 | -1>(1);
+  const [closing, setClosing] = useState(false);
+  const activeRef = useRef<number | null>(null);
   const startX = useRef(0);
+  const timer = useRef<number | null>(null);
 
-  const close = useCallback(() => setActive(null), []);
-  const prev = useCallback(
-    () => setActive((a) => (a === null ? a : (a - 1 + images.length) % images.length)),
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
+
+  const clearTimer = () => {
+    if (timer.current) {
+      window.clearTimeout(timer.current);
+      timer.current = null;
+    }
+  };
+
+  const go = useCallback(
+    (delta: number) => {
+      const cur = activeRef.current;
+      if (cur === null) return;
+      const nextIdx = (cur + delta + images.length) % images.length;
+      setLeaving(cur);
+      setDir(delta > 0 ? 1 : -1);
+      setActive(nextIdx);
+      clearTimer();
+      timer.current = window.setTimeout(() => setLeaving(null), 440);
+    },
     [images.length]
   );
-  const next = useCallback(
-    () => setActive((a) => (a === null ? a : (a + 1) % images.length)),
-    [images.length]
-  );
+
+  const prev = useCallback(() => go(-1), [go]);
+  const next = useCallback(() => go(1), [go]);
+
+  const requestClose = useCallback(() => {
+    setClosing(true);
+    window.setTimeout(() => {
+      setActive(null);
+      setLeaving(null);
+      setClosing(false);
+    }, 200);
+  }, []);
 
   useEffect(() => {
     if (active === null) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+      if (e.key === "Escape") requestClose();
       else if (e.key === "ArrowLeft") prev();
       else if (e.key === "ArrowRight") next();
     };
@@ -38,8 +70,9 @@ export default function PhotoGallery({
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      clearTimer();
     };
-  }, [active, close, prev, next]);
+  }, [active, requestClose, prev, next]);
 
   if (images.length === 0) {
     return (
@@ -68,14 +101,23 @@ export default function PhotoGallery({
     );
   }
 
+  const enterClass =
+    leaving === null ? "lb-pop" : dir === 1 ? "lb-from-right" : "lb-from-left";
+  const leaveClass = dir === 1 ? "lb-to-left" : "lb-to-right";
+
   return (
     <>
       <div className="grid grid-cols-3 gap-2.5">
         {images.map((src, i) => (
           <button
             key={i}
-            onClick={() => setActive(i)}
-            className="aspect-square overflow-hidden rounded-xl border border-ink-700 bg-ink-850"
+            onClick={() => {
+              setLeaving(null);
+              setDir(1);
+              setActive(i);
+            }}
+            className="thumb-in aspect-square overflow-hidden rounded-xl border border-ink-700 bg-ink-850"
+            style={{ animationDelay: `${i * 55}ms` }}
             aria-label={`查看 ${nickname} 的截图 ${i + 1}`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -83,7 +125,7 @@ export default function PhotoGallery({
               src={src}
               alt={`${nickname} 截图 ${i + 1}`}
               loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+              className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
             />
           </button>
         ))}
@@ -91,21 +133,24 @@ export default function PhotoGallery({
 
       {active !== null && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/92 p-4"
-          onClick={close}
+          className={`lb-backdrop ${closing ? "lb-out" : "lb-in"}`}
+          onClick={requestClose}
           onTouchStart={(e) => {
             startX.current = e.touches[0].clientX;
           }}
           onTouchEnd={(e) => {
             const dx = e.changedTouches[0].clientX - startX.current;
-            if (dx > 40) prev();
-            else if (dx < -40) next();
+            if (dx > 45) prev();
+            else if (dx < -45) next();
           }}
         >
           <button
-            onClick={close}
+            onClick={(e) => {
+              e.stopPropagation();
+              requestClose();
+            }}
             aria-label="关闭"
-            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-lg text-ink-100"
+            className="lb-btn absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-lg text-ink-100"
           >
             ✕
           </button>
@@ -115,29 +160,39 @@ export default function PhotoGallery({
               prev();
             }}
             aria-label="上一张"
-            className="absolute left-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-ink-100"
+            className="lb-btn absolute left-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-ink-100"
           >
             ‹
           </button>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={images[active]}
-            alt=""
-            onClick={(e) => e.stopPropagation()}
-            className="max-h-[85vh] max-w-full rounded-xl object-contain"
-          />
+
+          <div className="lb-stage">
+            {leaving !== null && (
+              <div className={`lb-layer ${leaveClass}`} onClick={(e) => e.stopPropagation()}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="lb-photo" src={images[leaving]} alt="" />
+              </div>
+            )}
+            <div className={`lb-layer ${enterClass}`} onClick={(e) => e.stopPropagation()}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="lb-photo" src={images[active]} alt={`${nickname} 截图 ${active + 1}`} />
+            </div>
+          </div>
+
           <button
             onClick={(e) => {
               e.stopPropagation();
               next();
             }}
             aria-label="下一张"
-            className="absolute right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-ink-100"
+            className="lb-btn absolute right-3 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-2xl text-ink-100"
           >
             ›
           </button>
-          <div className="absolute bottom-6 text-xs text-ink-300">
-            {active + 1} / {images.length}
+
+          <div className="lb-dots" onClick={(e) => e.stopPropagation()}>
+            {images.map((_, i) => (
+              <span key={i} className={`lb-dot ${i === active ? "on" : ""}`} />
+            ))}
           </div>
         </div>
       )}

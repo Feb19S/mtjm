@@ -81,3 +81,138 @@ body {
     transition: none;
   }
 }
+
+/* 相册缩略图错峰入场 */
+@keyframes thumbIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.thumb-in {
+  opacity: 0;
+  animation: thumbIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* 灯箱背景淡入淡出 */
+@keyframes lbFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes lbFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.lb-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.92);
+  padding: 1rem;
+}
+.lb-backdrop.lb-in { animation: lbFadeIn 0.22s ease forwards; }
+.lb-backdrop.lb-out { animation: lbFadeOut 0.2s ease forwards; }
+
+/* 灯箱舞台：两层叠放做交叉滑切 */
+.lb-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.lb-layer {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, opacity;
+}
+.lb-layer img,
+.lb-photo {
+  max-height: 85vh;
+  max-width: 100%;
+  border-radius: 0.75rem;
+  object-fit: contain;
+}
+/* Ken Burns 缓慢推镜，营造画廊感 */
+.lb-photo {
+  animation: kenburns 8s ease-out forwards;
+}
+@keyframes kenburns {
+  from { transform: scale(1); }
+  to { transform: scale(1.06); }
+}
+
+/* 切换：进场 / 出场方向动画 */
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(64px) scale(0.97); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-64px) scale(0.97); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes slideOutLeft {
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to { opacity: 0; transform: translateX(-64px) scale(0.97); }
+}
+@keyframes slideOutRight {
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to { opacity: 0; transform: translateX(64px) scale(0.97); }
+}
+
+.lb-pop { animation: popIn 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.lb-from-right { animation: slideInRight 0.44s cubic-bezier(0.22, 1, 0.36, 1); }
+.lb-from-left { animation: slideInLeft 0.44s cubic-bezier(0.22, 1, 0.36, 1); }
+.lb-to-left { animation: slideOutLeft 0.44s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.lb-to-right { animation: slideOutRight 0.44s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+/* 灯箱控制按钮轻交互 */
+.lb-btn {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.lb-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.08); }
+.lb-btn:active { transform: scale(0.94); }
+
+/* 底部进度圆点 */
+.lb-dots {
+  position: absolute;
+  bottom: 1.5rem;
+  display: flex;
+  gap: 0.4rem;
+}
+.lb-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.35);
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+.lb-dot.on {
+  width: 1.1rem;
+  background: #c9a961;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumb-in { opacity: 1; animation: none; }
+  .lb-backdrop.lb-in,
+  .lb-backdrop.lb-out { animation: none; }
+  .lb-pop, .lb-from-right, .lb-from-left, .lb-to-left, .lb-to-right { animation: none; }
+  .lb-photo { animation: none; }
+  .lb-dot { transition: none; }
+}
