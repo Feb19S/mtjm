@@ -18,20 +18,6 @@ function HomeIcon({ active }: IconProps) {
   );
 }
 
-function SwordIcon({ active }: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden>
-      <path
-        d="M14 4h6v6M20 4l-9 9M11 13l-6 6M9 15l-3-3M15 9l-3-3"
-        stroke="currentColor"
-        strokeWidth={active ? 2 : 1.6}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function UsersIcon({ active }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden>
@@ -66,32 +52,11 @@ function ScrollIcon({ active }: IconProps) {
   );
 }
 
-  function BellIcon({ active }: IconProps) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden>
-        <path
-          d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6Z"
-          stroke="currentColor"
-          strokeWidth={active ? 2 : 1.6}
-          strokeLinejoin="round"
-        />
-        <path
-          d="M10 19a2 2 0 0 0 4 0"
-          stroke="currentColor"
-          strokeWidth={active ? 2 : 1.6}
-          strokeLinecap="round"
-        />
-      </svg>
-    );
-  }
-
-  const tabs = [
-    { href: "/", label: "首页", Icon: HomeIcon },
-  { href: "/activities", label: "活动", Icon: SwordIcon },
+const tabs = [
+  { href: "/", label: "首页", Icon: HomeIcon },
   { href: "/members", label: "成员", Icon: UsersIcon },
-    { href: "/recruit", label: "招募", Icon: ScrollIcon },
-    { href: "/announcements", label: "公告", Icon: BellIcon },
-  ];
+  { href: "/recruit", label: "招募", Icon: ScrollIcon },
+];
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -110,7 +75,9 @@ export default function BottomNav() {
                 className={`flex flex-col items-center gap-1 py-2.5 text-[11px] transition-colors ${
                   active ? "text-gold-500" : "text-ink-400"
                 }`}
-                style={{ paddingBottom: "calc(0.625rem + env(safe-area-inset-bottom))" }}
+                style={{
+                  paddingBottom: "calc(0.625rem + env(safe-area-inset-bottom))",
+                }}
               >
                 <Icon active={active} />
                 <span className={active ? "font-medium" : ""}>{label}</span>

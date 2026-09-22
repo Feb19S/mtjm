@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import SplashScreen from "@/components/SplashScreen";
 
 export const metadata: Metadata = {
   title: "明天见吗 · 百业门户",
@@ -40,6 +41,7 @@ export default function RootLayout({
           <main className="flex-1 pb-24">{children}</main>
         </div>
         <BottomNav />
+        <SplashScreen />
       </body>
     </html>
   );
