@@ -1,9 +1,11 @@
 import PageHeader from "@/components/PageHeader";
+import RecruitJoin from "@/components/RecruitJoin";
 import {
   clan,
   recruitRoles,
   recruitRequirements,
   clanBenefits,
+  contact,
 } from "@/lib/data";
 
 export default function RecruitPage() {
@@ -120,22 +122,12 @@ export default function RecruitPage() {
           </ul>
         </section>
 
-        {/* CTA / 联系方式 */}
-        <section className="mt-7 rounded-2xl border border-ink-700 bg-ink-850 p-5 text-center">
-          <p className="text-sm text-ink-200">想加入？直接来找我们</p>
-          <p className="mt-1 text-[12px] text-ink-400">
-            游戏内搜索百业「{clan.name}」申请，或在群里 @管理员
-          </p>
-          <button
-            type="button"
-            className="mt-4 w-full rounded-xl bg-gold-500 py-3 text-sm font-medium text-ink-950 transition-colors active:bg-gold-400"
-          >
-            申请加入百业
-          </button>
-          <p className="mt-3 text-[11px] text-ink-600">
-            * 演示站点，联系入口后续可对接 QQ / 微信群或表单
-          </p>
-        </section>
+        {/* 加入方式：扫码进群 + 一键复制联系方式 */}
+        <RecruitJoin
+          wechat={contact.wechat}
+          qqGroup={contact.qqGroup}
+          note={contact.note}
+        />
       </div>
     </div>
   );

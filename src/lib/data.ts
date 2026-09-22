@@ -130,3 +130,11 @@ export const clanBenefits = [
   { title: "带躺", desc: "爬塔带新人，卡关随时喊人" },
   { title: "氛围", desc: "佛系不卷，唠嗑为主" },
 ];
+
+// 加群联系方式：填好后招募页「怎么加入」区会自动显示并可一键复制。
+// 微信号 / QQ 群留空则不显示对应行；群二维码放 public/recruit-qr.png 即可。
+export const contact = {
+  wechat: "",
+  qqGroup: "",
+  note: "游戏内搜索百业「明天见吗」申请，或在群里 @管理员",
+};
