@@ -8,11 +8,21 @@ const FILE = path.join(process.cwd(), "data", "signups.json");
 const KV_KEY = "mtjm:signups";
 
 // 双模式：
-// - 配了 Upstash Redis 环境变量（UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN）→ 用 Redis（Serverless 只读文件系统也能写）
+// - 配了 Upstash Redis 环境变量 → 用 Redis（Serverless 只读文件系统也能写）
+//   兼容两套变量名：UPSTASH_REDIS_REST_URL/TOKEN 或 KV_REST_API_URL/TOKEN（部分 Vercel 集成注入后者）
 // - 否则 → 用本地 JSON 文件（开发 / 单机）
-const useKV = !!(
-  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-);
+const url =
+  process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || "";
+const token =
+  process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || "";
+const useKV = !!(url && token);
+
+async function getRedis() {
+  const { Redis } = await import("@upstash/redis");
+  // fromEnv() 只认 UPSTASH_ 前缀；若只有 KV_ 前缀则手动传入
+  if (process.env.UPSTASH_REDIS_REST_URL) return Redis.fromEnv();
+  return new Redis({ url, token });
+}
 
 async function readFile(): Promise<Signups> {
   try {
@@ -30,8 +40,7 @@ async function writeFile(data: Signups): Promise<void> {
 export async function readSignups(): Promise<Signups> {
   if (useKV) {
     try {
-      const { Redis } = await import("@upstash/redis");
-      const redis = Redis.fromEnv();
+      const redis = await getRedis();
       return (await redis.get<Signups>(KV_KEY)) ?? {};
     } catch (e) {
       console.error("[store] Redis 读取失败，回退本地文件:", e);
@@ -52,8 +61,7 @@ export async function toggleSignup(
   data[activityId] = list;
 
   if (useKV) {
-    const { Redis } = await import("@upstash/redis");
-    const redis = Redis.fromEnv();
+    const redis = await getRedis();
     await redis.set(KV_KEY, data);
   } else {
     await writeFile(data);
