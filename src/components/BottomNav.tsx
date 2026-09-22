@@ -66,12 +66,32 @@ function ScrollIcon({ active }: IconProps) {
   );
 }
 
-const tabs = [
-  { href: "/", label: "首页", Icon: HomeIcon },
+  function BellIcon({ active }: IconProps) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden>
+        <path
+          d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 2 6H4c.5-.5 2-2 2-6Z"
+          stroke="currentColor"
+          strokeWidth={active ? 2 : 1.6}
+          strokeLinejoin="round"
+        />
+        <path
+          d="M10 19a2 2 0 0 0 4 0"
+          stroke="currentColor"
+          strokeWidth={active ? 2 : 1.6}
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
+
+  const tabs = [
+    { href: "/", label: "首页", Icon: HomeIcon },
   { href: "/activities", label: "活动", Icon: SwordIcon },
   { href: "/members", label: "成员", Icon: UsersIcon },
-  { href: "/recruit", label: "招募", Icon: ScrollIcon },
-];
+    { href: "/recruit", label: "招募", Icon: ScrollIcon },
+    { href: "/announcements", label: "公告", Icon: BellIcon },
+  ];
 
 export default function BottomNav() {
   const pathname = usePathname();

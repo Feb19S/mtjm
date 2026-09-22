@@ -35,3 +35,27 @@ body {
   background: #2a2a36;
   border-radius: 3px;
 }
+
+/* 卡片入场动画 */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-rise {
+  opacity: 0;
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-rise {
+    opacity: 1;
+    animation: none;
+  }
+}

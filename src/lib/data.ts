@@ -21,7 +21,7 @@ export const announcements: Announcement[] = [
   {
     id: 1,
     tag: "活动",
-    title: "本周十人本固定团开启报名，缺 2 名奶妈",
+    title: "本周十人本固定团开组，缺 2 名奶妈",
     date: "09-21",
   },
   {
@@ -82,17 +82,26 @@ export type Member = {
   power: number;
   online: boolean;
   joinWeeks: number;
+  bio: string;
+  avatar?: string;
+  // 个人页扩展字段
+  title?: string; // 称号
+  tags?: string[]; // 标签
+  joinedAt?: string; // 入伙日期，如 "2025-08"
+  signature?: string; // 个性签名
+  achievements?: string[]; // 高光时刻
+  photos?: string[]; // 相册图片路径
 };
 
 export const members: Member[] = [
-  { id: 1, nickname: "不过一介凡人", role: "大哥", class: "剑客", power: 21500, online: true, joinWeeks: 52 },
-  { id: 2, nickname: "江湖小二", role: "管理", class: "医者", power: 19800, online: true, joinWeeks: 48 },
-  { id: 3, nickname: "风雪夜归人", role: "核心", class: "刺客", power: 20400, online: false, joinWeeks: 40 },
-  { id: 4, nickname: "一箭穿云", role: "核心", class: "射手", power: 19200, online: true, joinWeeks: 36 },
-  { id: 5, nickname: "南山樵夫", role: "成员", class: "肉盾", power: 18900, online: false, joinWeeks: 30 },
-  { id: 6, nickname: "千山暮雪", role: "成员", class: "术士", power: 18100, online: true, joinWeeks: 24 },
-  { id: 7, nickname: "醉卧沙场", role: "成员", class: "刀客", power: 17900, online: false, joinWeeks: 20 },
-  { id: 8, nickname: "月下独酌", role: "成员", class: "琴师", power: 17500, online: true, joinWeeks: 12 },
+  { id: 1, nickname: "不过一介凡人", role: "大哥", class: "剑客", power: 21500, online: true, joinWeeks: 52, bio: "百业创始人，每天准时喊那句「明天见吗」。", title: "百业创始人", tags: ["气氛担当", "固定团指挥"], joinedAt: "2025-08", signature: "每天准时喊那句「明天见吗」", achievements: ["百业初创成员", "连续 52 周满勤", "十人本首杀团长"] },
+  { id: 2, nickname: "江湖小二", role: "管理", class: "医者", power: 19800, online: true, joinWeeks: 48, bio: "专职奶妈兼气氛组，团本后勤一把好手。", title: "后勤总管", tags: ["团本奶妈", "气氛组"], joinedAt: "2025-09", signature: "有事喊一声，奶马上到", achievements: ["十人本首杀", "分红 Top3", "带新人次数最多"] },
+  { id: 3, nickname: "风雪夜归人", role: "核心", class: "刺客", power: 20400, online: false, joinWeeks: 40, bio: "十人本主力输出，喜欢研究机制速通。", title: "机制研究员", tags: ["速通", "机制研究"], joinedAt: "2025-10", signature: "副本机制？我闭眼都熟", achievements: ["爬塔最高层记录", "十人本机制速通"] },
+  { id: 4, nickname: "一箭穿云", role: "核心", class: "射手", power: 19200, online: true, joinWeeks: 36, bio: "远程稳定输出，爬塔带躺专业户。", title: "远程核心", tags: ["稳定输出", "爬塔带躺"], joinedAt: "2025-11", signature: "站桩输出，稳得很", achievements: ["爬塔带躺 20+ 次", "周常满勤"] },
+  { id: 5, nickname: "南山樵夫", role: "成员", class: "肉盾", power: 18900, online: false, joinWeeks: 30, bio: "团本主T，扛伤一流，话不多。", title: "主T", tags: ["扛伤", "话少"], joinedAt: "2025-12", signature: "别怕，我顶在前面", achievements: ["十人本主T", "零倒T记录"] },
+  { id: 6, nickname: "千山暮雪", role: "成员", class: "术士", power: 18100, online: true, joinWeeks: 24, bio: "控场型术士，PVE / PVP 都在线。", title: "控场术士", tags: ["控场", "PVP"], joinedAt: "2026-01", signature: "控住就赢了半场", achievements: ["PVP 胜率领先", "团本控场核心"] },
+  { id: 7, nickname: "醉卧沙场", role: "成员", class: "刀客", power: 17900, online: false, joinWeeks: 20, bio: "佛系刀客，周末固定出勤。", title: "佛系刀客", tags: ["周末出勤", "佛系"], joinedAt: "2026-02", signature: "周末固定来，平时随缘", achievements: ["周末团本满勤"] },
+  { id: 8, nickname: "月下独酌", role: "成员", class: "琴师", power: 17500, online: true, joinWeeks: 12, bio: "新人友好型琴师，乐于带萌新。", title: "新人向导", tags: ["带萌新", "乐子人"], joinedAt: "2026-03", signature: "新人别慌，我带你", achievements: ["带萌新入门 10+", "团本气氛担当"] },
 ];
 
 export type RecruitRole = {

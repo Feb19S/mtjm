@@ -1,4 +1,5 @@
 import Link from "next/link";
+import GalaceanHero from "@/components/GalaceanHero";
 import {
   clan,
   announcements,
@@ -18,20 +19,24 @@ export default function HomePage() {
   return (
     <div className="px-5 pt-8">
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl border border-ink-700 bg-ink-850 p-6">
-        <div className="pointer-events-none absolute -right-6 -top-6 font-serif text-[88px] leading-none text-ink-800 select-none">
+      <section className="relative overflow-hidden rounded-2xl border border-ink-700 bg-ink-900 p-6">
+        <GalaceanHero />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-gold-500/10 via-transparent to-ink-950/40" />
+        <div className="pointer-events-none absolute -right-6 -top-6 z-0 font-serif text-[88px] leading-none text-ink-700/50 select-none">
           百
         </div>
-        <p className="text-xs tracking-[0.2em] text-gold-500">
-          {clan.subtitle}
-        </p>
-        <h1 className="mt-2 font-serif text-3xl font-bold tracking-wide text-ink-100">
-          {clan.name}
-        </h1>
-        <p className="mt-2 text-sm text-ink-300">{clan.slogan}</p>
-        <p className="mt-4 text-[13px] leading-relaxed text-ink-400">
-          {clan.intro}
-        </p>
+        <div className="relative z-10">
+          <p className="text-xs tracking-[0.2em] text-gold-500">
+            {clan.subtitle}
+          </p>
+          <h1 className="mt-2 font-serif text-3xl font-bold tracking-wide text-ink-100">
+            {clan.name}
+          </h1>
+          <p className="mt-2 text-sm text-ink-300">{clan.slogan}</p>
+          <p className="mt-4 text-[13px] leading-relaxed text-ink-400">
+            {clan.intro}
+          </p>
+        </div>
       </section>
 
       {/* Stats */}
@@ -103,6 +108,12 @@ export default function HomePage() {
             <span className="h-3.5 w-[3px] rounded-full bg-gold-500" />
             最新公告
           </h2>
+          <Link
+            href="/announcements"
+            className="text-xs text-ink-400 transition-colors hover:text-gold-500"
+          >
+            全部 ›
+          </Link>
         </div>
         <div className="divide-y divide-ink-700 overflow-hidden rounded-xl border border-ink-700 bg-ink-850">
           {announcements.map((n) => (
