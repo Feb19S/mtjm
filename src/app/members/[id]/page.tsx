@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { members } from "@/lib/data";
 import MemberAvatar from "@/components/MemberAvatar";
-import GalaceanHero from "@/components/GalaceanHero";
+import MemberAura from "@/components/MemberAura";
+import MemberConstellation from "@/components/MemberConstellation";
+import TiltCard from "@/components/TiltCard";
 
 const roleStyle: Record<string, string> = {
   大哥: "border-red-500/40 bg-red-500/10 text-red-400",
@@ -38,9 +40,9 @@ export default async function MemberProfile({
 
   return (
     <div>
-      {/* Hero：Galacean 流萤背景 + 个人信息 */}
+      {/* Hero：Galacean 角色光环 + 召唤入场 + 御剑精灵 + 引力场 */}
       <section className="relative overflow-hidden">
-        <GalaceanHero />
+        <MemberAura memberClass={member.class} />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink-900/30 via-ink-900/70 to-ink-900" />
 
         <div className="relative px-5 pb-5 pt-6">
@@ -51,7 +53,7 @@ export default async function MemberProfile({
             <span className="text-ink-500">‹</span> 返回成员
           </Link>
 
-          <div className="flex flex-col items-center text-center">
+          <TiltCard className="flex flex-col items-center text-center">
             <MemberAvatar member={member} size={96} />
             <h1 className="mt-3 font-serif text-2xl font-bold text-ink-100">
               {member.nickname}
@@ -79,7 +81,7 @@ export default async function MemberProfile({
                 「{member.signature}」
               </p>
             )}
-          </div>
+          </TiltCard>
         </div>
       </section>
 
@@ -105,6 +107,20 @@ export default async function MemberProfile({
             </div>
           </div>
         </div>
+
+        {/* 命格星盘 */}
+        <section className="mt-5">
+          <h2 className="mb-2.5 flex items-center gap-2 text-xs font-medium text-ink-300">
+            <span className="h-3 w-[3px] rounded-full bg-gold-500" />
+            命格星盘
+          </h2>
+          <div className="rounded-xl border border-ink-700 bg-ink-850 p-2">
+            <MemberConstellation member={member} />
+          </div>
+          <p className="mt-1.5 text-center text-[11px] text-ink-500">
+            旋转星图 · 五维命格一览（战力 / 资历 / 职位 / 标签 / 在线）
+          </p>
+        </section>
 
         {/* 标签 */}
         {member.tags && member.tags.length > 0 && (
