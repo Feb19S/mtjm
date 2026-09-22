@@ -4,12 +4,17 @@ import path from "path";
 // 报名数据：{ 活动ID: [昵称, ...] }
 export type Signups = Record<string, string[]>;
 
-// 开发/单机环境用 JSON 文件持久化。
-// 注意：部署到 Serverless（如 Vercel）时文件系统只读，
-// 需把这里换成 KV / 数据库（如 Vercel KV、Supabase）。
 const FILE = path.join(process.cwd(), "data", "signups.json");
+const KV_KEY = "mtjm:signups";
 
-export async function readSignups(): Promise<Signups> {
+// 双模式：
+// - 配了 Upstash Redis 环境变量（UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN）→ 用 Redis（Serverless 只读文件系统也能写）
+// - 否则 → 用本地 JSON 文件（开发 / 单机）
+const useKV = !!(
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+);
+
+async function readFile(): Promise<Signups> {
   try {
     return JSON.parse(await fs.readFile(FILE, "utf8")) as Signups;
   } catch {
@@ -17,9 +22,22 @@ export async function readSignups(): Promise<Signups> {
   }
 }
 
-export async function writeSignups(data: Signups): Promise<void> {
+async function writeFile(data: Signups): Promise<void> {
   await fs.mkdir(path.dirname(FILE), { recursive: true });
   await fs.writeFile(FILE, JSON.stringify(data, null, 2), "utf8");
+}
+
+export async function readSignups(): Promise<Signups> {
+  if (useKV) {
+    try {
+      const { Redis } = await import("@upstash/redis");
+      const redis = Redis.fromEnv();
+      return (await redis.get<Signups>(KV_KEY)) ?? {};
+    } catch (e) {
+      console.error("[store] Redis 读取失败，回退本地文件:", e);
+    }
+  }
+  return readFile();
 }
 
 export async function toggleSignup(
@@ -32,6 +50,13 @@ export async function toggleSignup(
   if (idx >= 0) list.splice(idx, 1);
   else list.push(player);
   data[activityId] = list;
-  await writeSignups(data);
+
+  if (useKV) {
+    const { Redis } = await import("@upstash/redis");
+    const redis = Redis.fromEnv();
+    await redis.set(KV_KEY, data);
+  } else {
+    await writeFile(data);
+  }
   return data;
 }

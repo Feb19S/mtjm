@@ -47,8 +47,9 @@ scripts/            # 图标生成脚本
 
 - 活动页可报名：填写游戏昵称 → 点「我要报名」，名单全员可见（存服务端）
 - 接口：`GET /api/signups` 读取名单，`POST /api/signups`（`{activityId, player}`）报名/取消
-- 存储：`data/signups.json`（运行时自动创建，已加入 .gitignore）
-- **上云提醒**：部署到 Serverless（Vercel）时文件系统只读，需把 `src/lib/store.ts` 里的读写换成 Vercel KV / Supabase 等，接口不用动
+- 存储（`src/lib/store.ts` 双模式，自动切换）：
+  - 配了 `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` 环境变量 → 用 **Upstash Redis**（Serverless 只读文件系统也能写）
+  - 否则 → 用本地 `data/signups.json`（开发 / 单机，已加入 .gitignore）
 
 ## 部署（Deploy）
 
@@ -67,15 +68,20 @@ npm run build         # 本地构建验证
 npm run deploy        # 等价于 npx vercel --prod，直接上线
 ```
 
-### ⚠️ 报名存储上云必读
+### 报名存储上云（Upstash Redis）
 
-当前报名名单写在 `data/signups.json`（服务端文件）。**Vercel 等 Serverless 平台文件系统只读**，部署后报名会写不进去。
-上线报名功能前，把 `src/lib/store.ts` 的读写换成 Vercel KV / Supabase / Redis 等托管存储（接口 `/api/signups` 与前端组件**无需改动**）。
+`src/lib/store.ts` 已做成双模式：检测到 Upstash Redis 环境变量就自动用 Redis，否则退回本地文件。**接口和前端都不用改**，只要以下步骤：
 
-> 纯展示页面（首页 / 成员 / 招募）不依赖文件存储，可直接部署，不受影响。
+1. 在 Vercel 项目里：**Storage → Connect Store → 选 Upstash Redis**（从 Marketplace 安装，Vercel KV 已弃用，新项目走 Redis）→ 创建并绑定到本项目
+2. 绑定后 Vercel 会自动注入 `UPSTASH_REDIS_REST_URL` 与 `UPSTASH_REDIS_REST_TOKEN` 两个环境变量（无需手填）
+3. 重新 Deploy（或等自动重新部署）
+4. 验证：活动页填昵称点「我要报名」→ 刷新/换设备仍看得到名单即成功
+
+> 未接 Redis 时，报名在 Vercel 上会失败（只读文件系统），但首页 / 活动展示 / 成员 / 招募页面正常。
+> 纯展示页面不依赖存储，任何时候都能部署。
 
 ## 待办
 
 - [ ] 对接真实数据（成员、活动、公告）
-- [ ] 部署时把报名存储换成云端 KV / 数据库
+- [x] 报名存储上云（Vercel KV 双模式，已接）
 - [ ] 招募表单单据 / 群二维码
