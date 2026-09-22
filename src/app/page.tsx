@@ -91,9 +91,6 @@ export default function HomePage() {
                   {a.schedule}
                 </p>
               </div>
-              <span className="shrink-0 text-xs text-ink-300">
-                {a.joined}/{a.capacity}
-              </span>
             </div>
           ))}
         </div>

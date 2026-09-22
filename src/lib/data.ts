@@ -43,8 +43,6 @@ export type Activity = {
   name: string;
   desc: string;
   schedule: string;
-  joined: number;
-  capacity: number;
   difficulty: "普通" | "困难" | "顶级";
   accent: string;
 };
@@ -55,8 +53,6 @@ export const activities: Activity[] = [
     name: "五人本",
     desc: "每周固定速刷，稳定出货自选装备",
     schedule: "周三 / 周六 20:00",
-    joined: 8,
-    capacity: 10,
     difficulty: "普通",
     accent: "#48BB78",
   },
@@ -65,8 +61,6 @@ export const activities: Activity[] = [
     name: "十人本",
     desc: "主力团活动，需 T 奶齐全、战力达标",
     schedule: "周五 21:00",
-    joined: 8,
-    capacity: 10,
     difficulty: "困难",
     accent: "#ED8936",
   },
@@ -75,8 +69,6 @@ export const activities: Activity[] = [
     name: "爬塔",
     desc: "冲层带躺，卡关互助，记录每周层数",
     schedule: "随时 / 周末集中",
-    joined: 12,
-    capacity: 20,
     difficulty: "顶级",
     accent: "#9F7AEA",
   },

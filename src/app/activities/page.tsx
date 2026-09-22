@@ -1,5 +1,4 @@
 import PageHeader from "@/components/PageHeader";
-import ActivitySignup from "@/components/ActivitySignup";
 import { activities } from "@/lib/data";
 
 const weekSchedule = [
@@ -15,16 +14,36 @@ const weekSchedule = [
 export default function ActivitiesPage() {
   return (
     <div>
-      <PageHeader
-        title="活动"
-        subtitle="百业周常排期 · 报名与进度一览"
-      />
+      <PageHeader title="活动" subtitle="百业周常排期一览" />
 
       <div className="px-5 pt-5">
-        {/* 活动卡片（可报名） */}
-        <ActivitySignup activities={activities} />
+        {/* 活动卡片 */}
+        <div className="space-y-3">
+          {activities.map((a) => (
+            <div
+              key={a.id}
+              className="rounded-2xl border border-ink-700 bg-ink-850 p-4"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-[15px] font-medium text-ink-100">{a.name}</h3>
+                <span
+                  className="shrink-0 rounded-full px-2 py-0.5 text-[11px]"
+                  style={{ color: a.accent, border: `1px solid ${a.accent}55` }}
+                >
+                  {a.difficulty}
+                </span>
+              </div>
+              <p className="mt-1.5 text-[12px] leading-relaxed text-ink-400">
+                {a.desc}
+              </p>
+              <p className="mt-2 text-[12px] text-ink-300">
+                排期 · {a.schedule}
+              </p>
+            </div>
+          ))}
+        </div>
 
-        {/* 周排期 */}
+        {/* 本周排期 */}
         <h2 className="mb-3 mt-7 flex items-center gap-2 text-sm font-medium text-ink-200">
           <span className="h-3.5 w-[3px] rounded-full bg-gold-500" />
           本周排期
@@ -56,14 +75,14 @@ export default function ActivitiesPage() {
           ))}
         </div>
 
-        {/* 报名说明 */}
+        {/* 活动说明 */}
         <div className="mt-5 rounded-xl border border-ink-700 bg-ink-850 p-4">
-          <h4 className="text-xs font-medium text-ink-300">报名须知</h4>
+          <h4 className="text-xs font-medium text-ink-300">活动说明</h4>
           <ul className="mt-2 space-y-1.5 text-[12px] leading-relaxed text-ink-400">
-            <li>· 每周一在群内发报名表，周五 18:00 截止</li>
-            <li>· 报名后请准时到场，临时有事提前请假</li>
+            <li>· 每周固定周常，具体时间以群内公告为准</li>
             <li>· 十人本需 T 奶齐全，战力不足可找大哥带</li>
             <li>· 爬塔不强制，随缘参与，记录个人层数</li>
+            <li>· 临时有事请提前在群内请假</li>
           </ul>
         </div>
       </div>
