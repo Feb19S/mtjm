@@ -21,16 +21,20 @@ export default function MembersPage() {
   let riseIndex = 0;
 
   return (
-    <div>
+    <div className="relative">
+      {/* 顶部星河微光 */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_50%_0%,rgba(201,169,97,0.12),transparent_70%)]" />
+
       <PageHeader
         title="成员"
         subtitle={`共 ${members.length} 人 · 在线 ${onlineCount} · 平均战力 ${avgPower.toLocaleString()}`}
       />
 
-      <div className="px-5 pt-5">
+      <div className="relative px-5 pt-5">
         {roleOrder.map((role) => {
           const list = members.filter((m) => m.role === role);
           if (list.length === 0) return null;
+          const isLeader = role === "大哥";
 
           return (
             <section key={role} className="mb-6">
@@ -40,47 +44,66 @@ export default function MembersPage() {
                 <span className="text-ink-500">({list.length})</span>
               </h2>
 
-              <div className="grid grid-cols-2 gap-2.5">
+              <div
+                className={`grid gap-2.5 ${
+                  isLeader ? "grid-cols-1" : "grid-cols-2"
+                }`}
+              >
                 {list.map((m) => {
                   riseIndex += 1;
                   return (
                     <Link
                       key={m.id}
                       href={`/members/${m.id}`}
-                      className="card-rise block rounded-2xl border border-ink-700 bg-ink-850 p-3.5 transition-transform active:scale-[0.98]"
+                      className="card-rise block"
                       style={{ animationDelay: `${riseIndex * 60}ms` }}
                     >
-                      <div className="flex items-center gap-2.5">
-                        <MemberAvatar member={m} size={48} />
-                        <div className="min-w-0 flex-1">
-                          <div className="truncate text-sm font-semibold text-ink-100">
-                            {m.nickname}
-                          </div>
-                          <span
-                            className={`mt-1 inline-block rounded border px-1.5 py-0.5 text-[10px] ${roleStyle[m.role]}`}
+                      <div
+                        className={`member-card ${
+                          isLeader ? "spotlight" : ""
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className={
+                              isLeader ? "avatar-ring" : "avatar-ring-sm"
+                            }
                           >
-                            {m.role}
+                            <MemberAvatar
+                              member={m}
+                              size={isLeader ? 56 : 44}
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate text-sm font-semibold text-ink-100">
+                              {m.nickname}
+                            </div>
+                            <span
+                              className={`mt-1 inline-block rounded border px-1.5 py-0.5 text-[10px] ${roleStyle[m.role]}`}
+                            >
+                              {m.role}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-2.5 flex items-center gap-2 text-[11px] text-ink-400">
+                          <span>{m.class}</span>
+                          <span className="text-ink-600">·</span>
+                          <span>战力 {m.power.toLocaleString()}</span>
+                          <span className="ml-auto flex items-center gap-1">
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                m.online ? "bg-emerald-400" : "bg-ink-500"
+                              }`}
+                            />
+                            {m.online ? "在线" : "离线"}
                           </span>
                         </div>
-                      </div>
 
-                      <div className="mt-2.5 flex items-center gap-2 text-[11px] text-ink-400">
-                        <span>{m.class}</span>
-                        <span className="text-ink-600">·</span>
-                        <span>战力 {m.power.toLocaleString()}</span>
-                        <span className="ml-auto flex items-center gap-1">
-                          <span
-                            className={`h-1.5 w-1.5 rounded-full ${
-                              m.online ? "bg-emerald-400" : "bg-ink-500"
-                            }`}
-                          />
-                          {m.online ? "在线" : "离线"}
-                        </span>
+                        <p className="mt-2 text-[12px] leading-relaxed text-ink-400">
+                          {m.bio}
+                        </p>
                       </div>
-
-                      <p className="mt-2 text-[12px] leading-relaxed text-ink-400">
-                        {m.bio}
-                      </p>
                     </Link>
                   );
                 })}
